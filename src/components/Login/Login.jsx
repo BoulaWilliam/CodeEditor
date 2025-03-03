@@ -1,10 +1,18 @@
-import { useFormik } from 'formik';
-import { object, ref, string } from 'yup';
-import axios from 'axios';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import { useNavigate, NavLink } from 'react-router-dom';
-import { Box, Input, Button, Text, VStack, FormControl, FormErrorMessage } from '@chakra-ui/react';
+import { useFormik } from "formik";
+import { object, ref, string } from "yup";
+import axios from "axios";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, NavLink } from "react-router-dom";
+import {
+    Box,
+    Input,
+    Button,
+    Text,
+    VStack,
+    FormControl,
+    FormErrorMessage,
+} from "@chakra-ui/react";
 // import { name } from './../../../node_modules/tailwindcss/node_modules/jiti/dist/babel';
 
 export default function Login() {
@@ -13,17 +21,24 @@ export default function Login() {
     // const passRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
     const validationSchema = object({
-        name: string().required('Name is Required').min(3, 'Name Must Be At Least 3 Chars!').max(25, "Name Can't Be More Than 25 Chars!"),
-        password: string().required('Password is Required!')
-            // .matches(passRegex, 'Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character'),
+        username: string()
+            .required("Username is Required")
+            .min(3, "Username Must Be At Least 3 Chars!")
+            .max(25, "Username Can't Be More Than 25 Chars!"),
+        password: string().required("Password is Required!"),
+        // .matches(passRegex, 'Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character'),
     });
 
     async function sendDataToLogin(values) {
-        const loadingToastId = toast.loading('Waiting...');
+        const loadingToastId = toast.loading("Waiting...");
         try {
-            const { data } = await axios.post('https://17u1pvbqegpi.share.zrok.io/login', values);
-            if (data.message === 'success') {
-                toast.success('User Created Successfully!');
+            const { data } = await axios.post(
+                "https://colleagues-break-army-judge.trycloudflare.com/login",
+                values
+            );
+
+            if (data.statusCode === 200) {
+                toast.success("User Created Successfully!");
                 setTimeout(() => {
                     navigate("/code");
                 }, 2000);
@@ -38,8 +53,8 @@ export default function Login() {
 
     const formik = useFormik({
         initialValues: {
-            name: '',
-            password: '',
+            username: "",
+            password: "",
         },
         validationSchema,
         onSubmit: sendDataToLogin,
@@ -60,33 +75,51 @@ export default function Login() {
                 maxW="400px"
                 w="full"
             >
-                <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={6} color="gray.100">
+                <Text
+                    fontSize="2xl"
+                    fontWeight="bold"
+                    textAlign="center"
+                    mb={6}
+                    color="gray.100"
+                >
                     <i className="fa-regular fa-circle-user"></i> Login Now
                 </Text>
 
                 <form onSubmit={formik.handleSubmit}>
                     <VStack spacing={4}>
                         {/* Name */}
-                        <FormControl isInvalid={formik.touched.name && formik.errors.name}>
+                        <FormControl
+                            isInvalid={
+                                formik.touched.name && formik.errors.username
+                            }
+                        >
                             <Input
                                 type="text"
-                                placeholder="Full Name"
-                                {...formik.getFieldProps('name')}
+                                placeholder="Username"
+                                {...formik.getFieldProps("username")}
                                 className="bg-gray-800 text-white placeholder-gray-400"
                             />
-                            <FormErrorMessage>{formik.errors.name}</FormErrorMessage>
+                            <FormErrorMessage>
+                                {formik.errors.username}
+                            </FormErrorMessage>
                         </FormControl>
                         {/* Password */}
-                        <FormControl isInvalid={formik.touched.password && formik.errors.password}>
+                        <FormControl
+                            isInvalid={
+                                formik.touched.password &&
+                                formik.errors.password
+                            }
+                        >
                             <Input
                                 type="password"
                                 placeholder="Password"
-                                {...formik.getFieldProps('password')}
+                                {...formik.getFieldProps("password")}
                                 className="bg-gray-800 text-white placeholder-gray-400"
                             />
-                            <FormErrorMessage>{formik.errors.password}</FormErrorMessage>
+                            <FormErrorMessage>
+                                {formik.errors.password}
+                            </FormErrorMessage>
                         </FormControl>
-
 
                         {/* Sign Up Button */}
                         <Button
@@ -100,7 +133,10 @@ export default function Login() {
                         </Button>
 
                         {/* Don'y Have an Account */}
-                        <NavLink to={'/register'} className="w-full text-center text-gray-300 hover:text-gray-100">
+                        <NavLink
+                            to={"/register"}
+                            className="w-full text-center text-gray-300 hover:text-gray-100"
+                        >
                             Don'y Have an Account ?
                         </NavLink>
                     </VStack>
