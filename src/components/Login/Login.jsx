@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import { object, ref, string } from "yup";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, NavLink } from "react-router-dom";
 import {
@@ -13,12 +13,13 @@ import {
     FormControl,
     FormErrorMessage,
 } from "@chakra-ui/react";
-// import { name } from './../../../node_modules/tailwindcss/node_modules/jiti/dist/babel';
+import { userContext } from '../../Contexts/UserContext/User.context';
 
 export default function Login() {
     const navigate = useNavigate();
-    // const [existAccountError, setExistAccountError] = useState(null);
-    // const passRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+    // Edit The Token 
+    let {setToken} = useContext(userContext)
 
     const validationSchema = object({
         username: string()
@@ -26,7 +27,6 @@ export default function Login() {
             .min(3, "Username Must Be At Least 3 Chars!")
             .max(25, "Username Can't Be More Than 25 Chars!"),
         password: string().required("Password is Required!"),
-        // .matches(passRegex, 'Password must have at least 8 characters, one uppercase, one lowercase, one number, and one special character'),
     });
 
     async function sendDataToLogin(values) {
@@ -39,11 +39,15 @@ export default function Login() {
 
             if (data.statusCode === 200) {
                 toast.success("User Created Successfully!");
+                console.log(data);
+                setToken(data.token)                
                 setTimeout(() => {
                     navigate("/code");
                 }, 2000);
             }
         } catch (error) {
+            console.log(error);
+            
             toast.error(error.response?.data?.message);
             // setExistAccountError(error.response?.data?.message);
         } finally {
