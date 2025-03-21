@@ -1,18 +1,8 @@
 import { useFormik } from "formik";
 import { object, string } from "yup";
 import axios from "axios";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, NavLink } from "react-router-dom";
-import {
-    Box,
-    Input,
-    Button,
-    Text,
-    VStack,
-    FormControl,
-    FormErrorMessage,
-} from "@chakra-ui/react";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -25,15 +15,12 @@ export default function Register() {
         password: string().required("Password is Required!"),
     });
 
+
     async function sendDataToRegister(values) {
         const loadingToastId = toast.loading("Waiting...");
 
         try {
-            const { data } = await axios.post(
-                `https://colleagues-break-army-judge.trycloudflare.com/register`,
-                values
-            );
-
+            const { data } = await axios.post("https://gradapi.duckdns.org/register",values);
             if (data.statusCode === 200) {
                 toast.success("User Created Successfully!");
                 setTimeout(() => navigate("/login"), 2000);
@@ -58,88 +45,60 @@ export default function Register() {
     });
 
     return (
-        <Box
-            minH="75vh"
-            className=" flex items-center justify-center px-4"
-            color="gray.200"
-        >
-            <Box
-                bg="rgba(255, 255, 255, 0.1)"
-                backdropFilter="blur(10px)"
-                borderRadius="lg"
-                boxShadow="lg"
-                p={8}
-                maxW="400px"
-                w="full"
-            >
-                <Text
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    textAlign="center"
-                    mb={6}
-                    color="gray.100"
-                >
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-lg p-8 w-full max-w-md text-gray-200">
+                <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
                     <i className="fa-regular fa-circle-user"></i> Register Now
-                </Text>
-
-                <form onSubmit={formik.handleSubmit}>
-                    <VStack spacing={4}>
-                        {/* Name */}
-                        <FormControl
-                            isInvalid={
-                                formik.touched.name && formik.errors.username
-                            }
-                        >
-                            <Input
-                                type="text"
-                                placeholder="Username"
-                                {...formik.getFieldProps("username")}
-                                className="bg-gray-800 text-white placeholder-gray-400"
-                            />
-                            <FormErrorMessage>
+                </h2>
+                <form onSubmit={formik.handleSubmit} className="space-y-4">
+                    {/* Username */}
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            {...formik.getFieldProps("username")}
+                            className="w-full bg-gray-800 text-white placeholder-gray-400 p-3 rounded focus:ring-2 focus:ring-purple-500"
+                        />
+                        {formik.touched.username && formik.errors.username && (
+                            <p className="text-red-500 text-sm mt-1">
                                 {formik.errors.username}
-                            </FormErrorMessage>
-                        </FormControl>
+                            </p>
+                        )}
+                    </div>
 
-                        {/* Password */}
-                        <FormControl
-                            isInvalid={
-                                formik.touched.password &&
-                                formik.errors.password
-                            }
-                        >
-                            <Input
-                                type="password"
-                                placeholder="Password"
-                                {...formik.getFieldProps("password")}
-                                className="bg-gray-800 text-white placeholder-gray-400"
-                            />
-                            <FormErrorMessage>
+                    {/* Password */}
+                    <div>
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            {...formik.getFieldProps("password")}
+                            className="w-full bg-gray-800 text-white placeholder-gray-400 p-3 rounded focus:ring-2 focus:ring-purple-500"
+                        />
+                        {formik.touched.password && formik.errors.password && (
+                            <p className="text-red-500 text-sm mt-1">
                                 {formik.errors.password}
-                            </FormErrorMessage>
-                        </FormControl>
+                            </p>
+                        )}
+                    </div>
 
-                        {/* Sign Up Button */}
-                        <Button
-                            type="submit"
-                            colorScheme="purple"
-                            width="full"
-                            className="transition-transform transform hover:scale-105"
-                            isLoading={formik.isSubmitting}
-                        >
-                            Sign Up
-                        </Button>
+                    {/* Sign Up Button */}
+                    <button
+                        type="submit"
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded transition-transform transform hover:scale-105"
+                        disabled={formik.isSubmitting}
+                    >
+                        Sign Up
+                    </button>
 
-                        {/* Already Have an Account */}
-                        <NavLink
-                            to={"/login"}
-                            className="w-full text-center text-gray-300 hover:text-gray-100"
-                        >
-                            Already Have An Account?
-                        </NavLink>
-                    </VStack>
+                    {/* Already Have an Account */}
+                    <NavLink
+                        to="/login"
+                        className="block text-center text-gray-300 hover:text-gray-100 mt-2"
+                    >
+                        Already Have An Account?
+                    </NavLink>
                 </form>
-            </Box>
-        </Box>
+            </div>
+        </div>
     );
 }

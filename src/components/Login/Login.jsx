@@ -1,25 +1,14 @@
 import { useFormik } from "formik";
-import { object, ref, string } from "yup";
+import { object, string } from "yup";
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, NavLink } from "react-router-dom";
-import {
-    Box,
-    Input,
-    Button,
-    Text,
-    VStack,
-    FormControl,
-    FormErrorMessage,
-} from "@chakra-ui/react";
-import { userContext } from '../../Contexts/UserContext/User.context';
+import { userContext } from "../../Contexts/UserContext/User.context";
 
 export default function Login() {
     const navigate = useNavigate();
-
-    // Edit The Token 
-    let {setToken} = useContext(userContext)
+    const { setToken } = useContext(userContext);
 
     const validationSchema = object({
         username: string()
@@ -33,23 +22,20 @@ export default function Login() {
         const loadingToastId = toast.loading("Waiting...");
         try {
             const { data } = await axios.post(
-                "https://colleagues-break-army-judge.trycloudflare.com/login",
+                "https://gradapi.duckdns.org/login",
                 values
             );
 
             if (data.statusCode === 200) {
                 toast.success("User Created Successfully!");
-                console.log(data);
-                setToken(data.token)                
+                localStorage.setItem("userToken", data.token);
+                setToken(data.token);
                 setTimeout(() => {
                     navigate("/code");
                 }, 2000);
             }
         } catch (error) {
-            console.log(error);
-            
             toast.error(error.response?.data?.message);
-            // setExistAccountError(error.response?.data?.message);
         } finally {
             toast.dismiss(loadingToastId);
         }
@@ -65,87 +51,60 @@ export default function Login() {
     });
 
     return (
-        <Box
-            minH="75vh"
-            className=" flex items-center justify-center px-4"
-            color="gray.200"
-        >
-            <Box
-                bg="rgba(255, 255, 255, 0.1)"
-                backdropFilter="blur(10px)"
-                borderRadius="lg"
-                boxShadow="lg"
-                p={8}
-                maxW="400px"
-                w="full"
-            >
-                <Text
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    textAlign="center"
-                    mb={6}
-                    color="gray.100"
-                >
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg shadow-lg p-8 w-full max-w-md text-gray-200">
+                <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
                     <i className="fa-regular fa-circle-user"></i> Login Now
-                </Text>
-
-                <form onSubmit={formik.handleSubmit}>
-                    <VStack spacing={4}>
-                        {/* Name */}
-                        <FormControl
-                            isInvalid={
-                                formik.touched.name && formik.errors.username
-                            }
-                        >
-                            <Input
-                                type="text"
-                                placeholder="Username"
-                                {...formik.getFieldProps("username")}
-                                className="bg-gray-800 text-white placeholder-gray-400"
-                            />
-                            <FormErrorMessage>
+                </h2>
+                <form onSubmit={formik.handleSubmit} className="space-y-4">
+                    {/* Username */}
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            {...formik.getFieldProps("username")}
+                            className="w-full bg-gray-800 text-white placeholder-gray-400 p-3 rounded focus:ring-2 focus:ring-purple-500"
+                        />
+                        {formik.touched.username && formik.errors.username && (
+                            <p className="text-red-500 text-sm mt-1">
                                 {formik.errors.username}
-                            </FormErrorMessage>
-                        </FormControl>
-                        {/* Password */}
-                        <FormControl
-                            isInvalid={
-                                formik.touched.password &&
-                                formik.errors.password
-                            }
-                        >
-                            <Input
-                                type="password"
-                                placeholder="Password"
-                                {...formik.getFieldProps("password")}
-                                className="bg-gray-800 text-white placeholder-gray-400"
-                            />
-                            <FormErrorMessage>
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            {...formik.getFieldProps("password")}
+                            className="w-full bg-gray-800 text-white placeholder-gray-400 p-3 rounded focus:ring-2 focus:ring-purple-500"
+                        />
+                        {formik.touched.password && formik.errors.password && (
+                            <p className="text-red-500 text-sm mt-1">
                                 {formik.errors.password}
-                            </FormErrorMessage>
-                        </FormControl>
+                            </p>
+                        )}
+                    </div>
 
-                        {/* Sign Up Button */}
-                        <Button
-                            type="submit"
-                            colorScheme="purple"
-                            width="full"
-                            className="transition-transform transform hover:scale-105"
-                            isLoading={formik.isSubmitting}
-                        >
-                            Login
-                        </Button>
+                    {/* Login Button */}
+                    <button
+                        type="submit"
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded transition-transform transform hover:scale-105"
+                        disabled={formik.isSubmitting}
+                    >
+                        Login
+                    </button>
 
-                        {/* Don'y Have an Account */}
-                        <NavLink
-                            to={"/register"}
-                            className="w-full text-center text-gray-300 hover:text-gray-100"
-                        >
-                            Don'y Have an Account ?
-                        </NavLink>
-                    </VStack>
+                    {/* Register Link */}
+                    <NavLink
+                        to="/register"
+                        className="block text-center text-gray-300 hover:text-gray-100 mt-2"
+                    >
+                        Don't Have an Account?
+                    </NavLink>
                 </form>
-            </Box>
-        </Box>
+            </div>
+        </div>
     );
 }
